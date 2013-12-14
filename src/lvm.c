@@ -186,18 +186,29 @@ static const TValue *get_compTM (lua_State *L, Table *mt1, Table *mt2,
   return NULL;
 }
 
-
 static int call_orderTM (lua_State *L, const TValue *p1, const TValue *p2,
                          TMS event) {
   const TValue *tm1 = luaT_gettmbyobj(L, p1, event);
   const TValue *tm2;
   if (ttisnil(tm1)) return -1;  /* no metamethod? */
   tm2 = luaT_gettmbyobj(L, p2, event);
-  if (!luaO_rawequalObj(tm1, tm2))  /* different metamethods? */
-    return -1;
+  // if (!luaO_rawequalObj(tm1, tm2))   different metamethods? 
+  //   return -1;
   callTMres(L, L->top, tm1, p1, p2);
   return !l_isfalse(L->top);
 }
+
+// static int call_orderTM (lua_State *L, const TValue *p1, const TValue *p2,
+//                          TMS event) {
+//   const TValue *tm1 = luaT_gettmbyobj(L, p1, event);
+//   const TValue *tm2;
+//   if (ttisnil(tm1)) return -1;  /* no metamethod? */
+//   tm2 = luaT_gettmbyobj(L, p2, event);
+//   if (!luaO_rawequalObj(tm1, tm2))  /* different metamethods? */
+//     return -1;
+//   callTMres(L, L->top, tm1, p1, p2);
+//   return !l_isfalse(L->top);
+// }
 
 
 static int l_strcmp (const TString *ls, const TString *rs) {
@@ -221,16 +232,15 @@ static int l_strcmp (const TString *ls, const TString *rs) {
   }
 }
 
-
 int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r) {
   int res;
-  if (ttype(l) != ttype(r))
-    return luaG_ordererror(L, l, r);
-  else if (ttisnumber(l))
-    return luai_numlt(nvalue(l), nvalue(r));
-  else if (ttisstring(l))
-    return l_strcmp(rawtsvalue(l), rawtsvalue(r)) < 0;
-  else if ((res = call_orderTM(L, l, r, TM_LT)) != -1)
+  if (ttype(l) == ttype(r)) {
+    if (ttisnumber(l))
+      return luai_numlt(nvalue(l), nvalue(r));
+    else if (ttisstring(l))
+      return l_strcmp(rawtsvalue(l), rawtsvalue(r)) < 0;
+  }
+  if ((res = call_orderTM(L, l, r, TM_LT)) != -1)
     return res;
   return luaG_ordererror(L, l, r);
 }
@@ -238,18 +248,48 @@ int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r) {
 
 static int lessequal (lua_State *L, const TValue *l, const TValue *r) {
   int res;
-  if (ttype(l) != ttype(r))
-    return luaG_ordererror(L, l, r);
-  else if (ttisnumber(l))
-    return luai_numle(nvalue(l), nvalue(r));
-  else if (ttisstring(l))
-    return l_strcmp(rawtsvalue(l), rawtsvalue(r)) <= 0;
-  else if ((res = call_orderTM(L, l, r, TM_LE)) != -1)  /* first try `le' */
+  if (ttype(l) == ttype(r)) {
+    if (ttisnumber(l))
+      return luai_numle(nvalue(l), nvalue(r));
+    else if (ttisstring(l))
+      return l_strcmp(rawtsvalue(l), rawtsvalue(r)) <= 0;
+  }
+  if ((res = call_orderTM(L, l, r, TM_LE)) != -1)  /* first try `le' */
     return res;
   else if ((res = call_orderTM(L, r, l, TM_LT)) != -1)  /* else try `lt' */
     return !res;
   return luaG_ordererror(L, l, r);
 }
+
+
+// int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r) {
+//   int res;
+//   if (ttype(l) != ttype(r))
+//     return luaG_ordererror(L, l, r);
+//   else if (ttisnumber(l))
+//     return luai_numlt(nvalue(l), nvalue(r));
+//   else if (ttisstring(l))
+//     return l_strcmp(rawtsvalue(l), rawtsvalue(r)) < 0;
+//   else if ((res = call_orderTM(L, l, r, TM_LT)) != -1)
+//     return res;
+//   return luaG_ordererror(L, l, r);
+// }
+
+
+// static int lessequal (lua_State *L, const TValue *l, const TValue *r) {
+//   int res;
+//   if (ttype(l) != ttype(r))
+//     return luaG_ordererror(L, l, r);
+//   else if (ttisnumber(l))
+//     return luai_numle(nvalue(l), nvalue(r));
+//   else if (ttisstring(l))
+//     return l_strcmp(rawtsvalue(l), rawtsvalue(r)) <= 0;
+//   else if ((res = call_orderTM(L, l, r, TM_LE)) != -1)  /* first try `le' */
+//     return res;
+//   else if ((res = call_orderTM(L, r, l, TM_LT)) != -1)  /* else try `lt' */
+//     return !res;
+//   return luaG_ordererror(L, l, r);
+// }
 
 
 int luaV_equalval (lua_State *L, const TValue *t1, const TValue *t2) {
