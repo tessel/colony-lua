@@ -81,7 +81,12 @@
         'src/lundump.c',
         'src/lvm.c',
         'src/lzio.c'
-      ]
+      ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          'src',
+        ],
+      }
     },
     {
       'target_name': 'lua',
