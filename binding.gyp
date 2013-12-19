@@ -4,7 +4,8 @@
       "target_name": "binding",
       "sources": [ ],
       'dependencies': [
-        'lua.gyp:luac'
+        'lua.gyp:luac',
+        'lua.gyp:lua'
       ]
     }
   ]
