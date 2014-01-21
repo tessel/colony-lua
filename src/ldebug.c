@@ -209,6 +209,14 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
       }
       case 'u': {
         ar->nups = f->c.nupvalues;
+        if (f == NULL || f->c.isC) {
+          ar->isvararg = 1;
+          ar->nparams = 0;
+        }
+        else {
+          ar->isvararg = f->l.p->is_vararg;
+          ar->nparams = f->l.p->numparams;
+        }
         break;
       }
       case 'n': {

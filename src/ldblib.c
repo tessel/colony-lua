@@ -125,10 +125,13 @@ static int db_getinfo (lua_State *L) {
     settabsi(L, "lastlinedefined", ar.lastlinedefined);
     settabss(L, "what", ar.what);
   }
+  if (strchr(options, 'u')) {
+    settabsi(L, "nups", ar.nups);
+    settabsi(L, "nparams", ar.nparams);
+    settabsi(L, "isvararg", ar.isvararg);
+  }
   if (strchr(options, 'l'))
     settabsi(L, "currentline", ar.currentline);
-  if (strchr(options, 'u'))
-    settabsi(L, "nups", ar.nups);
   if (strchr(options, 'n')) {
     settabss(L, "name", ar.name);
     settabss(L, "namewhat", ar.namewhat);

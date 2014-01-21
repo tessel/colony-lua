@@ -351,6 +351,8 @@ struct lua_Debug {
   const char *source;	/* (S) */
   int currentline;	/* (l) */
   int nups;		/* (u) number of upvalues */
+  unsigned char nparams;/* (u) number of parameters */
+  char isvararg;        /* (u) */
   int linedefined;	/* (S) */
   int lastlinedefined;	/* (S) */
   char short_src[LUA_IDSIZE]; /* (S) */
