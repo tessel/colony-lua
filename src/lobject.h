@@ -100,7 +100,7 @@ typedef struct lua_TValue {
 #define bvalue(o)	check_exp(ttisboolean(o), (o)->value.b)
 #define thvalue(o)	check_exp(ttisthread(o), &(o)->value.gc->th)
 
-#define l_isfalse(o)	(ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0) || (ttisnumber(o) && nvalue(o) == 0))
+#define l_isfalse(o)	(ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0) || (ttisnumber(o) && nvalue(o) == 0) || (ttisstring(o) && tsvalue(o)->len == 0))
 
 /*
 ** for internal debug only

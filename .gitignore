@@ -1,2 +1,5 @@
 *.o
 build
+src/lua
+src/luac
+*.a

@@ -590,7 +590,15 @@ static void codenot (FuncState *fs, expdesc *e) {
       e->k = VTRUE;
       break;
     }
-    case VK: case VKNUM: case VTRUE: {
+    case VKNUM: {
+      e->k = e->u.nval == 0 ? VTRUE : VFALSE;
+      break;
+    }
+    case VK: {
+      e->k = (ttisstring(&fs->f->k[e->u.s.info]) && tsvalue(&fs->f->k[e->u.s.info])->len == 0) ? VTRUE : VFALSE;
+      break;
+    }
+    case VTRUE: {
       e->k = VFALSE;
       break;
     }
