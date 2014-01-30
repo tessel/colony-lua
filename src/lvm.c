@@ -39,6 +39,10 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
     setnvalue(n, num);
     return n;
   }
+  if (ttisboolean(obj)) {
+    setnvalue(n, bvalue(obj));
+    return n;
+  }
   else
     return NULL;
 }
