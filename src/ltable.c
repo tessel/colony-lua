@@ -169,7 +169,7 @@ int luaH_next (lua_State *L, Table *t, StkId key) {
     }
   }
   for (i -= t->sizearray; i < sizenode(t); i++) {  /* then hash part */
-    if (!ttisnil(gval(gnode(t, i)))) {  /* a non-nil value? */
+    if (!ttisnil(gkey(gnode(t, i)))) {  /* a non-nil value? */
       setobj2s(L, key, key2tval(gnode(t, i)));
       setobj2s(L, key+1, gval(gnode(t, i)));
       return 1;
@@ -250,7 +250,7 @@ static int numusehash (const Table *t, int *nums, int *pnasize) {
   int i = sizenode(t);
   while (i--) {
     Node *n = &t->node[i];
-    if (!ttisnil(gval(n))) {
+    if (!ttisnil(gkey(n))) {
       ause += countint(key2tval(n), nums);
       totaluse++;
     }
@@ -316,8 +316,10 @@ static void resize (lua_State *L, Table *t, int nasize, int nhsize) {
   /* re-insert elements from hash part */
   for (i = twoto(oldhsize) - 1; i >= 0; i--) {
     Node *old = nold+i;
-    if (!ttisnil(gval(old)))
+    if (!ttisnil(gkey(old))) {
+      // printf("------> using %d\n", tsvalue(gkey(old))->len);
       setobjt2t(L, luaH_set(L, t, key2tval(old)), gval(old));
+    }
   }
   if (nold != dummynode)
     luaM_freearray(L, nold, twoto(oldhsize), Node);  /* free old array */
@@ -398,7 +400,7 @@ static Node *getfreepos (Table *t) {
 */
 static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
   Node *mp = mainposition(t, key);
-  if (!ttisnil(gval(mp)) || mp == dummynode) {
+  if (!ttisnil(gkey(mp)) || mp == dummynode) {
     Node *othern;
     Node *n = getfreepos(t);  /* get a free place */
     if (n == NULL) {  /* cannot find a free place? */
