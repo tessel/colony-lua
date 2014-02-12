@@ -25,6 +25,8 @@
 #include "ltable.h"
 #include "ltm.h"
 #include "lvm.h"
+#include "lauxlib.h"
+#include "lapi.h"
 
 
 
@@ -43,10 +45,27 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
     setnvalue(n, bvalue(obj));
     return n;
   }
+  if (ttistable(obj)) {
+    setnvalue(n, nan(""));
+    return n;
+  }
   else
     return NULL;
 }
 
+static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
+  if (ttistable(obj)) {
+    luaA_pushobject(L, obj);
+    if (luaL_callmeta(L, -1, "__tovalue"))  /* is there a metafield? */ {
+      const TValue *ret = L->top + -1;
+      lua_remove(L, -1);
+      if (!ttistable(ret)) {
+        return luaV_tonumber(ret, n);
+      }
+    }
+  }
+  return luaV_tonumber(obj, n);
+}
 
 int luaV_tostring (lua_State *L, StkId obj) {
   if (!ttisnumber(obj))
@@ -362,8 +381,8 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
                    const TValue *rc, TMS op) {
   TValue tempb, tempc;
   const TValue *b, *c;
-  if ((b = luaV_tonumber(rb, &tempb)) != NULL &&
-      (c = luaV_tonumber(rc, &tempc)) != NULL) {
+  if ((b = luaV_tovalue(L, rb, &tempb)) != NULL &&
+      (c = luaV_tovalue(L, rc, &tempc)) != NULL) {
     lua_Number nb = nvalue(b), nc = nvalue(c);
     switch (op) {
       case TM_ADD: setnvalue(ra, luai_numadd(nb, nc)); break;
