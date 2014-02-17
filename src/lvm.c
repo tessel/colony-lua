@@ -54,17 +54,28 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
 }
 
 static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
+  lua_Number num;
   if (ttistable(obj)) {
     luaA_pushobject(L, obj);
     if (luaL_callmeta(L, -1, "__tovalue"))  /* is there a metafield? */ {
       const TValue *ret = L->top + -1;
       lua_remove(L, -1);
       if (!ttistable(ret)) {
-        return luaV_tonumber(ret, n);
+        obj = ret;
       }
     }
   }
-  return luaV_tonumber(obj, n);
+  if (ttisnumber(obj)) return obj;
+  if (ttisboolean(obj)) {
+    setnvalue(n, bvalue(obj));
+    return n;
+  }
+  if (ttistable(obj)) {
+    setnvalue(n, nan(""));
+    return n;
+  }
+  else
+    return NULL;
 }
 
 int luaV_tostring (lua_State *L, StkId obj) {
