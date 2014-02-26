@@ -247,6 +247,8 @@ static void DumpConstants(const Proto* f, DumpState* D)
  for (i=0; i<n; i++) DumpFunction(f->p[i],f->source,D);
 }
 
+__attribute__((weak)) int _lua_sourcemap (int i) { return i; }
+
 static void DumpDebug(const Proto* f, DumpState* D)
 {
  int i,n;
@@ -255,7 +257,7 @@ static void DumpDebug(const Proto* f, DumpState* D)
  Align4(D);
  for (i=0; i<n; i++)
  {
-  DumpInt(f->lineinfo[i],D);
+  DumpInt(_lua_sourcemap(f->lineinfo[i]),D);
  }
  
  n= (D->strip) ? 0 : f->sizelocvars;
