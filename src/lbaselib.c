@@ -52,6 +52,12 @@ static int luaB_print (lua_State *L) {
 
 static int luaB_tonumber (lua_State *L) {
   int base = luaL_optint(L, 2, 10);
+  if (lua_istable(L, 1)) {
+    if (luaL_callmeta(L, 1, "__tovalue"))  /* is there a metafield? */ {
+      lua_insert(L, 1);
+      lua_remove(L, 2);
+    }
+  }
   if (base == 10) {  /* standard conversion */
     luaL_checkany(L, 1);
     if (lua_isnumber(L, 1)) {
