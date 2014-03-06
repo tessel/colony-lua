@@ -226,6 +226,30 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
 }
 
 
+// Backported from 5.2
+LUALIB_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len) {
+  if (!luaL_callmeta(L, idx, "__tostring")) {  /* no metafield? */
+    switch (lua_type(L, idx)) {
+      case LUA_TNUMBER:
+      case LUA_TSTRING:
+        lua_pushvalue(L, idx);
+        break;
+      case LUA_TBOOLEAN:
+        lua_pushstring(L, (lua_toboolean(L, idx) ? "true" : "false"));
+        break;
+      case LUA_TNIL:
+        lua_pushliteral(L, "nil");
+        break;
+      default:
+        lua_pushfstring(L, "%s: %p", luaL_typename(L, idx),
+                                            lua_topointer(L, idx));
+        break;
+    }
+  }
+  return lua_tolstring(L, -1, len);
+}
+
+
 LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
                                 const luaL_Reg *l) {
   luaI_openlib(L, libname, l, 0);

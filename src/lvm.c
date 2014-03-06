@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define lvm_c
 #define LUA_CORE
@@ -138,11 +139,30 @@ static void callTM (lua_State *L, const TValue *f, const TValue *p1,
   luaD_call(L, L->top - 4, 0);
 }
 
+static int is_numeric (const char * s, lua_Number* ret) {
+  if (s == NULL || *s == '\0' || isspace((unsigned char) *s))
+    return 0;
+  char * p;
+  *ret = strtod (s, &p);
+  return *p == '\0';
+}
 
 void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
+  size_t str_len = 0;
+  lua_Number ret = 0;
+  const char* str;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
     const TValue *tm;
+    if (!ttisnumber(key) && !ttisstring(key)) {
+      luaA_pushobject(L, key);
+      str = luaL_tolstring(L, -1, &str_len);
+      setsvalue2s(L, key, luaS_newlstr(L, str, str_len));
+      lua_remove(L, -1);
+    }
+    if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
+      setnvalue(key, ret);
+    }
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
       const TValue *res = luaH_get(h, key); /* do a primitive get */
@@ -167,9 +187,21 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
 
 void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
+  size_t str_len = 0;
+  lua_Number ret = 0;
+  const char* str;
   TValue temp;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
     const TValue *tm;
+    if (!ttisnumber(key) && !ttisstring(key)) {
+      luaA_pushobject(L, key);
+      str = luaL_tolstring(L, -1, &str_len);
+      setsvalue2s(L, key, luaS_newlstr(L, str, str_len));
+      lua_remove(L, -1);
+    }
+    if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
+      setnvalue(key, ret);
+    }
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
       TValue *oldval = luaH_set(L, h, key); /* do a primitive set */
