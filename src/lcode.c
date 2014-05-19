@@ -539,6 +539,9 @@ static int jumponcond (FuncState *fs, expdesc *e, int cond) {
 void luaK_goiftrue (FuncState *fs, expdesc *e) {
   int pc;  /* pc of last jump */
   luaK_dischargevars(fs, e);
+  if (e->k == VKNUM && e->u.nval == 0) {
+    e->k = VFALSE;
+  }
   switch (e->k) {
     case VK: case VKNUM: case VTRUE: {
       pc = NO_JUMP;  /* always true; do nothing */
