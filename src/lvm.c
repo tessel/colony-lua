@@ -30,6 +30,13 @@
 #include "lapi.h"
 
 
+#ifdef _MSC_VER
+static long double nan () {
+  static long double zero = 0.0L;
+  return zero / zero;
+}
+#endif
+
 
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	100
@@ -55,7 +62,6 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
 }
 
 static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
-  lua_Number num;
   if (ttistable(obj)) {
     luaA_pushobject(L, obj);
     if (luaL_callmeta(L, -1, "__tovalue"))  /* is there a metafield? */ {
@@ -140,9 +146,9 @@ static void callTM (lua_State *L, const TValue *f, const TValue *p1,
 }
 
 static int is_numeric (const char * s, lua_Number* ret) {
+  char * p;
   if (s == NULL || *s == '\0' || isspace((unsigned char) *s))
     return 0;
-  char * p;
   *ret = strtod (s, &p);
   return *p == '\0';
 }
