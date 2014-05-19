@@ -247,6 +247,7 @@ static void DumpConstants(const Proto* f, DumpState* D)
  for (i=0; i<n; i++) DumpFunction(f->p[i],f->source,D);
 }
 
+extern int _lua_sourcemap (int i);
 #ifndef LUA_OVERRIDE_SOURCEMAP
 int _lua_sourcemap (int i) { return i; }
 #endif

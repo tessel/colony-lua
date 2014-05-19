@@ -124,7 +124,7 @@ static int LoadInt(LoadState* S)
 
 static lua_Number LoadNumber(LoadState* S)
 {
- lua_Number x;
+ lua_Number x = (lua_Number)0;
  if(S->toflt)
  {
   switch(S->numsize)
