@@ -147,7 +147,7 @@ static void callTM (lua_State *L, const TValue *f, const TValue *p1,
 
 static int is_numeric (const char * s, lua_Number* ret) {
   char * p;
-  if (s == NULL || *s == '\0' || isspace((unsigned char) *s))
+  if (s == NULL || *s == '\0' || isspace((unsigned char) *s) || (*s == '0' && !(*(s+1) == '.' || *(s+1) == '\0')))
     return 0;
   *ret = strtod (s, &p);
   return *p == '\0';
