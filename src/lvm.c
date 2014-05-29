@@ -66,7 +66,6 @@ static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
     luaA_pushobject(L, obj);
     if (luaL_callmeta(L, -1, "__tovalue"))  /* is there a metafield? */ {
       const TValue *ret = L->top + -1;
-      lua_remove(L, -1);
       if (!ttistable(ret)) {
         obj = ret;
       }
