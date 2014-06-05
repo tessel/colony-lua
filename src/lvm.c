@@ -305,6 +305,14 @@ static int l_strcmp (const TString *ls, const TString *rs) {
 
 int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r) {
   int res;
+  TValue tempb, tempc;
+  const TValue *b, *c;
+  if ((b = luaV_tovalue(L, l, &tempb)) != NULL) {
+    l = b;
+  }
+  if ((c = luaV_tovalue(L, r, &tempc)) != NULL) {
+    r = c;
+  }
   if (ttype(l) == ttype(r)) {
     if (ttisnumber(l))
       return luai_numlt(nvalue(l), nvalue(r));
@@ -319,6 +327,14 @@ int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r) {
 
 static int lessequal (lua_State *L, const TValue *l, const TValue *r) {
   int res;
+  TValue tempb, tempc;
+  const TValue *b, *c;
+  if ((b = luaV_tovalue(L, l, &tempb)) != NULL) {
+    l = b;
+  }
+  if ((c = luaV_tovalue(L, r, &tempc)) != NULL) {
+    r = c;
+  }
   if (ttype(l) == ttype(r)) {
     if (ttisnumber(l))
       return luai_numle(nvalue(l), nvalue(r));
