@@ -149,6 +149,8 @@ static int is_numeric (const char * s, lua_Number* ret) {
   if (s == NULL || *s == '\0' || isspace((unsigned char) *s) || (*s == '0' && !(*(s+1) == '.' || *(s+1) == '\0')))
     return 0;
   *ret = strtod (s, &p);
+  if (isnan(*ret) || !isfinite(*ret))
+    return 0;
   return *p == '\0';
 }
 
@@ -184,7 +186,7 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       callTMres(L, val, tm, t, key);
       return;
     }
-    t = tm;  /* else repeat with `tm' */ 
+    t = tm;  /* else repeat with `tm' */
   }
   luaG_runerror(L, "loop in gettable");
 }
@@ -263,7 +265,7 @@ static int call_orderTM (lua_State *L, const TValue *p1, const TValue *p2,
   const TValue *tm2;
   if (ttisnil(tm1)) return -1;  /* no metamethod? */
   tm2 = luaT_gettmbyobj(L, p2, event);
-  // if (!luaO_rawequalObj(tm1, tm2))   different metamethods? 
+  // if (!luaO_rawequalObj(tm1, tm2))   different metamethods?
   //   return -1;
   callTMres(L, L->top, tm1, p1, p2);
   return !l_isfalse(L->top);
@@ -891,4 +893,3 @@ void luaV_execute (lua_State *L, int nexeccalls) {
     }
   }
 }
-
