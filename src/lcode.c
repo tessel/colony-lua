@@ -539,7 +539,7 @@ static int jumponcond (FuncState *fs, expdesc *e, int cond) {
 void luaK_goiftrue (FuncState *fs, expdesc *e) {
   int pc;  /* pc of last jump */
   luaK_dischargevars(fs, e);
-  if (e->k == VKNUM && e->u.nval == 0) {
+  if (e->k == VKNUM && (e->u.nval == 0 || isnan(e->u.nval))) {
     e->k = VFALSE;
   }
   switch (e->k) {
@@ -594,7 +594,7 @@ static void codenot (FuncState *fs, expdesc *e) {
       break;
     }
     case VKNUM: {
-      e->k = e->u.nval == 0 ? VTRUE : VFALSE;
+      e->k = (e->u.nval == 0 || isnan(e->u.nval)) ? VTRUE : VFALSE;
       break;
     }
     case VK: {
