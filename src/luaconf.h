@@ -32,6 +32,9 @@
 #if !defined(LUA_ANSI) && defined(_WIN32)
 #define LUA_WIN
 
+/*
+** Float and math definitions. 
+*/
 #include <float.h>
 #include <math.h>
 #define isfinite(x) (_finite(x))
