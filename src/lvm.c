@@ -159,6 +159,7 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   size_t str_len = 0;
   lua_Number ret = 0;
   const char* str;
+  TValue tempval;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
     const TValue *tm;
     if (!ttisnumber(key) && !ttisstring(key)) {
@@ -168,7 +169,8 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       lua_remove(L, -1);
     }
     if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
-      setnvalue(key, ret);
+      setnvalue(&tempval, ret);
+      key = &tempval;
     }
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
@@ -197,7 +199,7 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   size_t str_len = 0;
   lua_Number ret = 0;
   const char* str;
-  TValue temp;
+  TValue temp, tempval;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
     const TValue *tm;
     if (!ttisnumber(key) && !ttisstring(key)) {
@@ -207,7 +209,8 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       lua_remove(L, -1);
     }
     if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
-      setnvalue(key, ret);
+      setnvalue(&tempval, ret);
+      key = &tempval;
     }
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
