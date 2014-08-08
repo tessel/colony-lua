@@ -30,13 +30,6 @@
 #include "lapi.h"
 
 
-#ifdef _MSC_VER
-static long double nan () {
-  static long double zero = 0.0L;
-  return zero / zero;
-}
-#endif
-
 
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	100

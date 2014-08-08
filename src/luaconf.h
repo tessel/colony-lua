@@ -560,6 +560,13 @@
 /* On a Microsoft compiler, use assembler */
 #if defined(_MSC_VER)
 
+#define isnan(x) _isnan(x)
+#define isinf(x) (!_finite(x))
+static long double nan () {
+  static long double zero = 0.0L;
+  return zero / zero;
+}
+
 #define lua_number2int(i,d)   __asm fld d   __asm fistp i
 #define lua_number2integer(i,n)		lua_number2int(i, n)
 
