@@ -37,6 +37,7 @@
 */
 #include <float.h>
 #include <math.h>
+#define isnan(x) (_isnan(x))
 #define isfinite(x) (_finite(x))
 #endif
 

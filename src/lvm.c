@@ -47,7 +47,7 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    setnvalue(n, nan(""));
+    setnvalue(n, 0.0/0.0);
     return n;
   }
   else
@@ -70,7 +70,7 @@ static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    setnvalue(n, nan(""));
+    setnvalue(n, 0.0/0.0);
     return n;
   }
   else
