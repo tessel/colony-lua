@@ -102,6 +102,16 @@
 		            LUA_CDIR"?.lua;"  LUA_CDIR"?/init.lua"
 #define LUA_CPATH_DEFAULT \
 	"./?.so;"  LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+
+/*
+** nan and finite definitions
+**/
+#define isnan(x) _isnan(x)
+#define isinf(x) (!_finite(x))
+static long double nan () {
+  static long double zero = 0.0L;
+  return zero / zero;
+}
 #endif
 
 
