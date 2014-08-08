@@ -47,7 +47,8 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    setnvalue(n, 0.0/0.0);
+    unsigned long localnan[2]={0xffffffff, 0x7fffffff};
+    setnvalue(n, *( double* )localnan);
     return n;
   }
   else
@@ -70,7 +71,8 @@ static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    setnvalue(n, 0.0/0.0);
+    unsigned long localnan[2]={0xffffffff, 0x7fffffff};
+    setnvalue(n, *( double* )localnan);
     return n;
   }
   else
