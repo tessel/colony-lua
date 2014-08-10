@@ -34,6 +34,13 @@
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	100
 
+static double getnan () {
+  unsigned long localnan[2]={0xffffffff, 0x7fffffff};
+  char* ptrc = (char*) &localnan;
+  double* ptrd = (double*) ptrc;
+  return *ptrd;
+}
+
 
 const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
   lua_Number num;
@@ -47,8 +54,7 @@ const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    unsigned long localnan[2]={0xffffffff, 0x7fffffff};
-    setnvalue(n, *( double* )localnan);
+    setnvalue(n, getnan());
     return n;
   }
   else
@@ -71,8 +77,7 @@ static const TValue *luaV_tovalue (lua_State *L, const TValue *obj, TValue *n) {
     return n;
   }
   if (ttistable(obj)) {
-    unsigned long localnan[2]={0xffffffff, 0x7fffffff};
-    setnvalue(n, *( double* )localnan);
+    setnvalue(n, getnan());
     return n;
   }
   else
