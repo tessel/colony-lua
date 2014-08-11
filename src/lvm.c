@@ -35,10 +35,14 @@
 #define MAXTAGLOOP	100
 
 static double getnan () {
+#ifdef _MSC_VER
   unsigned long localnan[2]={0xffffffff, 0x7fffffff};
   char* ptrc = (char*) &localnan;
   double* ptrd = (double*) ptrc;
   return *ptrd;
+#else
+  return nan("");
+#end
 }
 
 

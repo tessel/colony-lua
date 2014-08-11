@@ -37,8 +37,12 @@
 */
 #include <float.h>
 #include <math.h>
+#if !defined(isnan)
 #define isnan(x) (_isnan(x))
+#endif
+#if !defined(isfinite)
 #define isfinite(x) (_finite(x))
+#endif
 #endif
 
 #if defined(LUA_USE_LINUX)
