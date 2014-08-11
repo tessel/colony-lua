@@ -42,7 +42,7 @@ static double getnan () {
   return *ptrd;
 #else
   return nan("");
-#end
+#endif
 }
 
 
