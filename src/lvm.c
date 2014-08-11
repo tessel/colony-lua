@@ -165,7 +165,8 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
     if (!ttisnumber(key) && !ttisstring(key)) {
       luaA_pushobject(L, key);
       str = luaL_tolstring(L, -1, &str_len);
-      setsvalue2s(L, key, luaS_newlstr(L, str, str_len));
+      setsvalue2s(L, &tempval, luaS_newlstr(L, str, str_len));
+      key = &tempval;
       lua_remove(L, -1);
     }
     if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
@@ -205,8 +206,9 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
     if (!ttisnumber(key) && !ttisstring(key)) {
       luaA_pushobject(L, key);
       str = luaL_tolstring(L, -1, &str_len);
-      setsvalue2s(L, key, luaS_newlstr(L, str, str_len));
+      setsvalue2s(L, &tempval, luaS_newlstr(L, str, str_len));
       lua_remove(L, -1);
+      key = &tempval;
     }
     if (ttisstring(key) && is_numeric(svalue(key), &ret)) {
       setnvalue(&tempval, ret);
