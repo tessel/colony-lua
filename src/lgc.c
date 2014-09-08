@@ -223,6 +223,7 @@ static void traverseproto (global_State *g, Proto *f) {
 
 static void traverseclosure (global_State *g, Closure *cl) {
   markobject(g, cl->c.env);
+  markobject(g, cl->c.table);
   if (cl->c.isC) {
     int i;
     for (i=0; i<cl->c.nupvalues; i++)  /* mark its upvalues */

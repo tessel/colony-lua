@@ -556,20 +556,32 @@ LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {
 
 LUA_API void lua_rawget (lua_State *L, int idx) {
   StkId t;
+  struct Table *h;
   lua_lock(L);
   t = index2adr(L, idx);
-  api_check(L, ttistable(t));
-  setobj2s(L, L->top - 1, luaH_get(hvalue(t), L->top - 1));
+  if (ttisfunction(t)) {
+    h = clvalue(t)->c.table;
+  } else {
+    api_check(L, ttistable(t));
+    h = hvalue(t);
+  }
+  setobj2s(L, L->top - 1, luaH_get(h, L->top - 1));
   lua_unlock(L);
 }
 
 
 LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
   StkId o;
+  struct Table *h;
   lua_lock(L);
   o = index2adr(L, idx);
-  api_check(L, ttistable(o));
-  setobj2s(L, L->top, luaH_getnum(hvalue(o), n));
+  if (ttisfunction(o)) {
+    h = clvalue(o)->c.table;
+  } else {
+    api_check(L, ttistable(o));
+    h = hvalue(o);
+  }
+  setobj2s(L, L->top, luaH_getnum(h, n));
   api_incr_top(L);
   lua_unlock(L);
 }
@@ -670,12 +682,18 @@ LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
 
 LUA_API void lua_rawset (lua_State *L, int idx) {
   StkId t;
+  struct Table *h;
   lua_lock(L);
   api_checknelems(L, 2);
   t = index2adr(L, idx);
-  api_check(L, ttistable(t));
-  setobj2t(L, luaH_set(L, hvalue(t), L->top-2), L->top-1);
-  luaC_barriert(L, hvalue(t), L->top-1);
+  if (ttisfunction(t)) {
+    h = clvalue(t)->c.table;
+  } else {
+    api_check(L, ttistable(t));
+    h = hvalue(t);
+  }
+  setobj2t(L, luaH_set(L, h, L->top-2), L->top-1);
+  luaC_barriert(L, h, L->top-1);
   L->top -= 2;
   lua_unlock(L);
 }
@@ -683,12 +701,18 @@ LUA_API void lua_rawset (lua_State *L, int idx) {
 
 LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   StkId o;
+  struct Table *h;
   lua_lock(L);
   api_checknelems(L, 1);
   o = index2adr(L, idx);
-  api_check(L, ttistable(o));
-  setobj2t(L, luaH_setnum(L, hvalue(o), n), L->top-1);
-  luaC_barriert(L, hvalue(o), L->top-1);
+  if (ttisfunction(o)) {
+    h = clvalue(o)->c.table;
+  } else {
+    api_check(L, ttistable(o));
+    h = hvalue(o);
+  }
+  setobj2t(L, luaH_setnum(L, h, n), L->top-1);
+  luaC_barriert(L, h, L->top-1);
   L->top--;
   lua_unlock(L);
 }

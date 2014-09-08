@@ -173,7 +173,9 @@ static int luaB_rawequal (lua_State *L) {
 
 
 static int luaB_rawget (lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
+  int t = lua_type(L, 1);
+  luaL_argcheck(L, t == LUA_TFUNCTION || t == LUA_TTABLE, 1,
+                    "table or function expected");
   luaL_checkany(L, 2);
   lua_settop(L, 2);
   lua_rawget(L, 1);
@@ -181,7 +183,9 @@ static int luaB_rawget (lua_State *L) {
 }
 
 static int luaB_rawset (lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
+  int t = lua_type(L, 1);
+  luaL_argcheck(L, t == LUA_TFUNCTION || t == LUA_TTABLE, 1,
+                    "table or function expected");
   luaL_checkany(L, 2);
   luaL_checkany(L, 3);
   lua_settop(L, 3);
