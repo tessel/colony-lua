@@ -997,10 +997,16 @@ LUA_API int lua_error (lua_State *L) {
 LUA_API int lua_next (lua_State *L, int idx) {
   StkId t;
   int more;
+  struct Table *h;
   lua_lock(L);
   t = index2adr(L, idx);
-  api_check(L, ttistable(t));
-  more = luaH_next(L, hvalue(t), L->top - 1);
+  if (ttisfunction(t)) {
+    h = clvalue(t)->c.table;
+  } else {
+    api_check(L, ttistable(t));
+    h = hvalue(t);
+  }
+  more = luaH_next(L, h, L->top - 1);
   if (more) {
     api_incr_top(L);
   }
