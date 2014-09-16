@@ -16,6 +16,7 @@
 #include "lgc.h"
 #include "lmem.h"
 #include "lobject.h"
+#include "ltable.h"
 #include "lstate.h"
 
 
@@ -25,6 +26,7 @@ Closure *luaF_newCclosure (lua_State *L, int nelems, Table *e) {
   luaC_link(L, obj2gco(c), LUA_TFUNCTION);
   c->c.isC = 1;
   c->c.env = e;
+  c->l.table = luaH_new(L, 0, 0);
   c->c.nupvalues = cast_byte(nelems);
   return c;
 }
@@ -35,6 +37,7 @@ Closure *luaF_newLclosure (lua_State *L, int nelems, Table *e) {
   luaC_link(L, obj2gco(c), LUA_TFUNCTION);
   c->l.isC = 0;
   c->l.env = e;
+  c->l.table = luaH_new(L, 0, 0);
   c->l.nupvalues = cast_byte(nelems);
   while (nelems--) c->l.upvals[nelems] = NULL;
   return c;

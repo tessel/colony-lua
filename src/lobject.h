@@ -290,7 +290,8 @@ typedef struct UpVal {
 
 #define ClosureHeader \
 	CommonHeader; lu_byte isC; lu_byte nupvalues; GCObject *gclist; \
-	struct Table *env
+	struct Table *env; \
+	struct Table *table
 
 typedef struct CClosure {
   ClosureHeader;

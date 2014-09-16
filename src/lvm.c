@@ -177,11 +177,19 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       setnvalue(&tempval, ret);
       key = &tempval;
     }
-    if (ttistable(t)) {  /* `t' is a table? */
-      Table *h = hvalue(t);
+    if (ttistable(t) || ttisfunction(t)) {  /* `t' is a table? */
+      Table *h, *hmeta;
+      if (ttisfunction(t)) {
+        h = clvalue(t)->c.table;
+        hmeta = G(L)->mt[ttype(t)];
+      } else {
+        h = hvalue(t);
+        hmeta = h->metatable;
+      }
+
       const TValue *res = luaH_get(h, key); /* do a primitive get */
       if (!ttisnil(res) ||  /* result is no nil? */
-          (tm = fasttm(L, h->metatable, TM_INDEX)) == NULL) { /* or no TM? */
+          (tm = fasttm(L, hmeta, TM_INDEX)) == NULL) { /* or no TM? */
         setobj2s(L, val, res);
         return;
       }
@@ -218,11 +226,19 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       setnvalue(&tempval, ret);
       key = &tempval;
     }
-    if (ttistable(t)) {  /* `t' is a table? */
-      Table *h = hvalue(t);
+    if (ttistable(t) || ttisfunction(t)) {  /* `t' is a table? */
+      Table *h, *hmeta;
+      if (ttisfunction(t)) {
+        h = clvalue(t)->c.table;
+        hmeta = G(L)->mt[ttype(t)];
+      } else {
+        h = hvalue(t);
+        hmeta = h->metatable;
+      }
+
       TValue *oldval = luaH_set(L, h, key); /* do a primitive set */
       if (!ttisnil(oldval) ||  /* result is no nil? */
-          (tm = fasttm(L, h->metatable, TM_NEWINDEX)) == NULL) { /* or no TM? */
+          (tm = fasttm(L, hmeta, TM_NEWINDEX)) == NULL) { /* or no TM? */
         setobj2t(L, oldval, val);
         h->flags = 0;
         luaC_barriert(L, h, val);
